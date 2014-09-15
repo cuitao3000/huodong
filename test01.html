@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <script src="jquery-2.1.1.min.js"></script>
+    <script src="Constants.js"></script>
+    <script>
+    var DEBUG_USE_LOCAL_DATA=false;
+    var QUERY_URL = "http://211.155.92.192/huodong/get"
+
+    $(document).ready(function(){
+        $("#testLocal").click(function(){
+            var queryRequest;
+
+            if(DEBUG_USE_LOCAL_DATA){
+                queryRequest="test-data.txt";
+            } else {
+                queryRequest="http://211.155.92.192/test2.php";
+            }
+            $.ajax({
+                url:queryRequest,
+                type:'GET',
+                dataType:'JSON',
+                success: function(data){
+                    console.log("hello world");
+                    console.log(data);
+
+                    // var jsonObj = jQuery.parseJSON('{"name":"cuitao","approved":true,"city":"beijing","id":1234,"company":"baidu"}');
+                    // var jsonObj = $.evalJson(data);
+
+                    var name = data.name;
+                    var approved=data.approved;
+                    var city=data.city;
+                    var id=data.id;
+                    var company=data.company;
+                    console.log("getJSON :"+name + "  "+ city+" "+approved + " "+id);
+                    // alert("getJSON;"+data);
+                    var result = "JsonResult:"+name + "  "+ city+" "+approved + " "+id;
+                    // document.getElementById("demo").innerHTML=result;
+                    $("#demo").html(result);
+                }
+            });
+            // $.getJSON("test-data.txt",function(data){
+            //     $.each(data,function(i,field){
+            //         $("p").append(field+" ");
+            //     });
+            // //alert("数据：" + data + "\n状态：" + status);
+            // });
+});
+
+var xmlhttp;
+if (window.XMLHttpRequest)
+  {// code for IE7+, Firefox, Chrome, Opera, Safari
+      xmlhttp=new XMLHttpRequest();
+  }
+  else
+  {// code for IE6, IE5
+      xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+  }
+  xmlhttp.onreadystatechange=function()
+  {
+      if (xmlhttp.readyState==4 && xmlhttp.status==200)
+      {
+        console.log("responseText:"+responseText);
+        parseJSON(xmlhttp.responseText);
+        // document.getElementById("myDiv").innerHTML=xmlhttp.responseText;
+    }
+}
+xmlhttp.open("GET","test-data.txt",true);
+xmlhttp.send();
+    //   $.get("test-data.txt",function(data,status){
+    //     alert("数据：" + data + "\n状态：" + status);
+
+
+    // });
+
+    //   $.ajax({
+    //     url:"http://211.155.92.192/test2.php",
+    //     type:'GET',
+    //     dataType:'JSON',
+    //     success: function(data){
+    //         $('p').append( "Data: " + data );
+    //     }
+    // });
+});
+function parseJSON (argument) {
+    var jsonObj = jQuery.parseJSON(argument);
+
+    var name = jsonObj.name;
+    var approved=jsonObj.approved;
+    var city=jsonObj.city;
+    var id=jsonObj.id;
+    var company=jsonObj.company;
+    console.log("getJSON :"+name + "  "+ city);
+}
+function queryHuodong (id, callback) {
+    // body...
+    var id = id;
+
+    var result="";
+    //http://211.155.92.192/huodong/get?id=3
+    var queryRequst = QUERY_URL+"?id="+id;
+    if(DEBUG_USE_LOCAL_DATA){
+        queryRequst="test-data.txt";
+    }
+    console.log("queryRequst:"+queryRequst);
+    $.ajax({
+        // url:"http://211.155.92.192/test2.php",
+        url:queryRequst,
+        type:'GET',
+        dataType:'JSON',
+        success: function(data){
+
+            console.log("getJSON: "+data[0]);
+            result = "JsonResult:"+data[0].location + "  "+ data[0].introduction+" "+data[0].person_numbers + " "+data[0].huodong_date;
+            console.log("in function:"+result);
+            callback(result);
+            $('queryResult').append( "Data: " + data[0] );
+        }
+    });
+    console.log("return :"+result);
+    return result;
+
+
+}
+function testQueryById(){
+    var idText = document.getElementById("idText").value;
+    var callback = function (data) {
+        // body...
+        $("#Tip").html(data);
+        console.log("callback :"+data);
+    }
+    var queryResult = queryHuodong(idText, callback);
+    // document.getElementById("Tip").style.display="block";
+    // document.getElementById("Tip").innerHTML=queryResult;
+}
+</script>
+</head>
+<body>
+
+    <h1>My First Web Page</h1>
+
+    <p id="demo">My First Paragraph.</p>
+    <p id='queryResult'>empty</p>
+    <p id="addResult">empty</p>
+    <p id="deleteResult">empty</p>
+    <p id='updateResult'>empty</p>
+
+    <script>
+    document.getElementById("demo").innerHTML="My First JavaScript";
+    </script>
+
+    <div id="div1"><h2>使用 jQuery AJAX 来改变文本</h2></div>
+    <button id="testLocal">"本地文件测试"</button>
+    <button id="query">发送查询请求</button>
+    <br /><br />
+    <div class="iframe">
+        <div class="title">请输入活动的ID号</div>
+        <div class="content">
+            ID: <input id="idText" type="text" class="txt"/><br />
+            <input id="btnQuery" type="button" value="查 询" class="btn" onclick="testQueryById();" />
+        </div>
+        <p id="Tip">empty</p>
+        <br />
+    </div>
+</body>
+</html>
